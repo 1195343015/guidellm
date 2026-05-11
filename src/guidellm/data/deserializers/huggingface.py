@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
 
 from datasets import (
     Dataset,
@@ -17,6 +16,7 @@ from datasets.exceptions import (
     DatasetNotFoundError,
     FileNotFoundDatasetsError,
 )
+from pydantic import Field
 from transformers import PreTrainedTokenizerBase
 
 from guidellm.data.deserializers.deserializer import (
@@ -24,20 +24,37 @@ from guidellm.data.deserializers.deserializer import (
     DatasetDeserializer,
     DatasetDeserializerFactory,
 )
+from guidellm.data.schemas import DataArgs
 
 __all__ = ["HuggingFaceDatasetDeserializer"]
+
+
+@DataArgs.register("huggingface")
+class HuggingFaceDataArgs(DataArgs):
+    kind: str = Field(
+        default="huggingface",
+        description="Type identifier for the Hugging Face dataset deserializer.",
+    )
+    data: str | Dataset | IterableDataset | DatasetDict | IterableDatasetDict = Field(
+        description=(
+            "Data input for the Hugging Face dataset deserializer. This can be a "
+            "Dataset, IterableDataset, DatasetDict, IterableDatasetDict, a string or "
+            "Path to a local dataset directory or a local .py dataset script, or a "
+            "dataset identifier from the Hugging Face Hub."
+        ),
+    )
 
 
 @DatasetDeserializerFactory.register("huggingface")
 class HuggingFaceDatasetDeserializer(DatasetDeserializer):
     def __call__(
         self,
-        data: Any,
+        config: HuggingFaceDataArgs,
         processor_factory: Callable[[], PreTrainedTokenizerBase],
         random_seed: int,
-        **data_kwargs: dict[str, Any],
     ) -> Dataset | IterableDataset | DatasetDict | IterableDatasetDict:
         _ = (processor_factory, random_seed)
+        data = config.data
 
         if isinstance(
             data, Dataset | IterableDataset | DatasetDict | IterableDatasetDict
@@ -53,7 +70,7 @@ class HuggingFaceDatasetDeserializer(DatasetDeserializer):
         ):
             # Handle python script or nested python script in a directory
             try:
-                return load_dataset(str(data), **data_kwargs)
+                return load_dataset(str(data), **config.load_kwargs)
             except (
                 FileNotFoundDatasetsError,
                 DatasetNotFoundError,
@@ -63,7 +80,7 @@ class HuggingFaceDatasetDeserializer(DatasetDeserializer):
             except Exception:  # noqa: BLE001
                 # Try loading as a local dataset directory next
                 try:
-                    return load_from_disk(str(data), **data_kwargs)
+                    return load_from_disk(str(data), **config.load_kwargs)
                 except (
                     FileNotFoundDatasetsError,
                     DatasetNotFoundError,
@@ -73,7 +90,7 @@ class HuggingFaceDatasetDeserializer(DatasetDeserializer):
 
         try:
             # Handle dataset identifier from the Hugging Face Hub
-            return load_dataset(str(data), **data_kwargs)
+            return load_dataset(str(data), **config.load_kwargs)
         except (
             FileNotFoundDatasetsError,
             DatasetNotFoundError,
