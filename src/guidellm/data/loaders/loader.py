@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 from guidellm.data.schemas import DataEntrypointArgs
 from guidellm.utils.registry import RegistryMixin
@@ -14,6 +14,8 @@ DataT_co = TypeVar("DataT_co", covariant=True)
 class DataLoader(Protocol[DataT_co]):
     def __init__(self, config: DataEntrypointArgs) -> None: ...
     def __iter__(self) -> Iterator[DataT_co]: ...
+    @property
+    def info(self) -> dict[str, Any]: ...
 
 
 class DataLoaderRegistry(RegistryMixin[type[DataLoader]]):
