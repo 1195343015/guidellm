@@ -365,10 +365,10 @@ class ReplayProfile(Profile):
         rate_type: str,
         rate: list[float] | None,
         random_seed: int,
-        data: list[DataArgs],
         **kwargs: Any,
     ) -> dict[str, Any]:
         _ = (rate_type, random_seed)  # unused
+        data: list[DataArgs] = kwargs.get("data", [])
         if len(data) != 1:
             raise ValueError(
                 f"ReplayProfile requires exactly one data source, received {len(data)}"
