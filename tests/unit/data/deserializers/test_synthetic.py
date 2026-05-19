@@ -136,7 +136,6 @@ class TestSyntheticDatasetConfig:
             output_tokens_stdev=5,
             output_tokens_min=20,
             output_tokens_max=40,
-            source="custom_text.txt",
         )
 
         assert config.prefix_buckets[0].prefix_tokens == 5  # type: ignore [index]
@@ -148,7 +147,6 @@ class TestSyntheticDatasetConfig:
         assert config.output_tokens_stdev == 5
         assert config.output_tokens_min == 20
         assert config.output_tokens_max == 40
-        assert config.source == "custom_text.txt"
 
     @pytest.mark.regression
     def test_parse_json_string(self):
@@ -160,7 +158,6 @@ class TestSyntheticDatasetConfig:
             {
                 "prompt_tokens": 75,
                 "output_tokens": 25,
-                "source": "test.txt",
                 "prefix_buckets": [
                     {"bucket_weight": 100, "prefix_count": 1, "prefix_tokens": 10}
                 ],
@@ -171,7 +168,6 @@ class TestSyntheticDatasetConfig:
 
         assert config.prompt_tokens == 75
         assert config.output_tokens == 25
-        assert config.source == "test.txt"
         assert config.prefix_buckets[0].prefix_tokens == 10  # type: ignore [index]
 
     @pytest.mark.sanity
@@ -242,7 +238,6 @@ class TestSyntheticTextGenerator:
         return SyntheticTextDataArgs(
             prompt_tokens=15,
             output_tokens=10,
-            source="The quick brown fox jumps over the lazy dog.",
         )
 
     @pytest.fixture
@@ -259,7 +254,6 @@ class TestSyntheticTextGenerator:
             prefix_buckets=[prefix_bucket],
             prompt_tokens=15,
             output_tokens=10,
-            source="The quick brown fox jumps over the lazy dog.",
         )
 
     @pytest.mark.smoke
@@ -400,7 +394,6 @@ class TestSyntheticDatasetDeserializer:
         config_data = {
             "prompt_tokens": 60,
             "output_tokens": 15,
-            "source": "yaml_test.txt",
             "prefix_buckets": [
                 {"bucket_weight": 100, "prefix_count": 1, "prefix_tokens": 3}
             ],
@@ -418,7 +411,6 @@ class TestSyntheticDatasetDeserializer:
 
             assert loaded_config.prompt_tokens == 60
             assert loaded_config.output_tokens == 15
-            assert loaded_config.source == "yaml_test.txt"
             assert loaded_config.prefix_buckets[0].prefix_tokens == 3  # type: ignore [index]
         finally:
             Path(yaml_path).unlink()
