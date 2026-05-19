@@ -9,7 +9,7 @@ import numpy as np
 from datasets import DatasetInfo, Features, IterableDataset, Value
 from datasets.iterable_dataset import _BaseExamplesIterable
 from faker import Faker
-from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from transformers import PreTrainedTokenizerBase
 
 from guidellm.data.deserializers.deserializer import (
@@ -17,9 +17,9 @@ from guidellm.data.deserializers.deserializer import (
     DatasetDeserializerFactory,
 )
 from guidellm.data.schemas import DataArgs
-from guidellm.utils.random import IntegerRangeSampler
-from guidellm.utils.imports import json
 from guidellm.settings import settings
+from guidellm.utils.imports import json
+from guidellm.utils.random import IntegerRangeSampler
 
 __all__ = [
     "SyntheticTextDataArgs",
