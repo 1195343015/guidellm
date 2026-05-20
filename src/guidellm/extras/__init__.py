@@ -11,7 +11,7 @@ ImportErrors if the optional dependencies are missing. Importing from the module
 submodule level ensures errors are deferred to calling point.
 """
 
-import lazy_loader as lazy
+import guidellm.utils.lazy_loader as lazy
 
 submodules = ["vllm", "vision", "audio"]
 
